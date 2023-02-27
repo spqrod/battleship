@@ -1,0 +1,31 @@
+{
+  "name": "battleship",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "start": "webpack serve --open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spqrod/battleship.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/spqrod/battleship/issues"
+  },
+  "homepage": "https://github.com/spqrod/battleship#readme",
+  "devDependencies": {
+    "html-webpack-plugin": "^5.5.0",
+    "jest": "^29.4.3",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1",
+    "webpack-dev-server": "^4.11.1"
+  },
+  "dependencies": {
+    "html-loader": "^4.2.0"
+  }
+}

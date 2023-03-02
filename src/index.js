@@ -38,17 +38,26 @@ const gameBoard = () => {
             shipsArrayElement.coordinates.forEach(shipCoordinates => {
                 if (JSON.stringify(hitCoordinates) == JSON.stringify(shipCoordinates)) {
                     shipsArrayElement.newShip.hit();
-                    console.log(shipsArrayElement.newShip.hits)
                     shipWasHit = true;
                 }
             });
         });
         if (!shipWasHit) {
-            missedHitsCoordinates.push(coordinates);
+            missedHitsCoordinates.push(hitCoordinates);
         }
     };
+    function isGameOver() {
+        let thereIsLiveShip = false;
+        shipsArray.forEach(shipsArrayElement => {
+            console.log(shipsArrayElement.newShip.isSunk());
+            if (!shipsArrayElement.newShip.isSunk()) {
+                thereIsLiveShip = true;
+            }
+        });
+        return (thereIsLiveShip) ? false : true;
+    };
 
-    return {createShip, shipsArray, receiveHit};
+    return {createShip, shipsArray, receiveHit, missedHitsCoordinates, isGameOver};
 }
 
 // Fact class Player

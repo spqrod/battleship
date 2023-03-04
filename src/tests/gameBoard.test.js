@@ -1,13 +1,12 @@
-// import gameBoard from "../factories/gameBoard.js";
-import {gameBoard} from "../factories/gameBoard.js";
+import { gameBoard } from "../factories/gameBoard.js";
 
 let gameBoardPlayer1;
 
 beforeAll(() => {
-    gameBoardPlayer1 = new gameBoard;
+    gameBoardPlayer1 = gameBoard();
 });
 afterEach(() => {
-    gameBoardPlayer1 = new gameBoard;
+    gameBoardPlayer1 = gameBoard();
 });
 
 test("Creates a ship", () => {

@@ -1,12 +1,12 @@
-import {ship} from "../factories/ship.js";
+import { ship } from "../factories/ship.js";
 
 let testShip;
 
 beforeAll(() => {
-    testShip = new ship(3);
+    testShip = ship(3);
 });
 afterEach(() => {
-    testShip = new ship(3);
+    testShip = ship(3);
 });
 
 

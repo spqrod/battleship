@@ -1,15 +1,16 @@
 export { gameBoard };
 import { ship } from "./ship.js";
 
-const gameBoard = () => {
-    const gameBoardSize = 9;
+const gameBoard = (playerNumber) => {
+    const gameBoardPlayerNumber = playerNumber;
+    const gameBoardSize = 10;
     const shipsArray = [];
     const missedHitsCoordinates = [];
     function createShip(length, coordinates) {
         // if (!areCoordinatesLegit(coordinates)) 
             // return;
         // isCoordinatesFree();
-        const newShip = new ship(length);
+        const newShip = ship(length);
         shipsArray.push({ newShip, coordinates });
     };
     function areCoordinatesLegit(coordinates) {
@@ -43,5 +44,5 @@ const gameBoard = () => {
         });
         return (thereIsLiveShip) ? false : true;
     };
-    return {createShip, shipsArray, receiveHit, missedHitsCoordinates, isGameOver};
+    return {createShip, shipsArray, receiveHit, missedHitsCoordinates, isGameOver, gameBoardPlayerNumber};
 };

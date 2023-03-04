@@ -44,5 +44,9 @@ h2 {
 }
 
 .cell.shipHit {
-    background-color: rgb(228, 176, 54);
+    background-color: rgb(232, 38, 38);
+}
+
+.cell.shipSunk {
+    background-color: rgb(0, 0, 0);
 }

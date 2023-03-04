@@ -7,10 +7,23 @@ const gameBoardSize = 100;
 
 // View
 const viewConstructor = () => {
-    function highlightCell(gameBoardPlayerNumber, coordinatesElement) {
+
+    function highlightShipCell(gameBoardPlayerNumber, coordinatesElement) {
         const cellID = translateCoordinatesToCellID(gameBoardPlayerNumber, coordinatesElement);
         const cell = document.querySelector(`#${cellID}`);
         cell.classList.add("shipNormal");
+    };
+
+    function highlightShipCellSunk(gameBoardPlayerNumber, coordinatesElement) {
+        const cellID = translateCoordinatesToCellID(gameBoardPlayerNumber, coordinatesElement);
+        const cell = document.querySelector(`#${cellID}`);
+        cell.classList.add("shipSunk");
+    };
+
+    function highlightShipCellHit(gameBoardPlayerNumber, coordinatesElement) {
+        const cellID = translateCoordinatesToCellID(gameBoardPlayerNumber, coordinatesElement);
+        const cell = document.querySelector(`#${cellID}`);
+        cell.classList.add("shipHit");
     };
 
     function translateCoordinatesToCellID(gameBoardPlayerNumber, coordinatesElement) {
@@ -23,8 +36,8 @@ const viewConstructor = () => {
         const cellNumber = Number(cellID.split("cell")[1]);
         const x = cellNumber % 10;
         const y = (cellNumber - x) / 10;
-        return { x, y };
-    }
+        return { y, x };
+    };
 
     function addEventListeners() {
         const cellsArray = document.querySelectorAll(".cell");
@@ -35,20 +48,23 @@ const viewConstructor = () => {
 
     function processCellClick(event) {
         const cellID = event.srcElement.id;
+        const gameBoardPlayerNumber = Number(cellID.split("board")[1].split("cell")[0]);
         const coordinates = translateCellIDToCoordinates(cellID);
-        // controller.processCellClick(coordinates);
-    }
+        controller.processCellClick(gameBoardPlayerNumber, coordinates);
+    };
 
-    return { highlightCell, addEventListeners };
+    return { highlightShipCell, highlightShipCellSunk, highlightShipCellHit, addEventListeners };
 };
 
 const view = viewConstructor();
 
 // Controller
 const controllerConstructor = () => {
+
+    const gameBoardPlayer1 = gameBoard(1);
+
     function initiateGame() {
         const newShip = ship(3);
-        const gameBoardPlayer1 = gameBoard(1);
         // const gameBoard2 = gameBoard();
         // const player1 = player();
         // const player2 = player();
@@ -67,16 +83,41 @@ const controllerConstructor = () => {
     function loopOverShips(gameBoardPlayerNumber, shipsArray) {
         shipsArray.forEach(shipsArrayElement => {
             shipsArrayElement.coordinates.forEach(coordinatesElement => {
-                view.highlightCell(gameBoardPlayerNumber, coordinatesElement);
-            })
+                highLightShipCellSunk(shipsArrayElement.newShip, gameBoardPlayerNumber, coordinatesElement);
+                highLightShipCellHit(shipsArrayElement.newShip, gameBoardPlayerNumber, coordinatesElement);
+                highLightShipCell(gameBoardPlayerNumber, coordinatesElement);
+            });
         });
     };
 
-    function processCellClick(coordinates) {
-
+    function highLightShipCellSunk(newShip, gameBoardPlayerNumber, coordinatesElement) {
+        if (newShip.isSunk()) {
+            view.highlightShipCellSunk(gameBoardPlayerNumber, coordinatesElement);
+        };
     };
 
-    return { display, initiateGame };
+    function highLightShipCellHit(newShip, gameBoardPlayerNumber, coordinatesElement) {
+        if (newShip.hitsCoordinates) {
+            newShip.hitsCoordinates.forEach(hitCoordinates => {
+                if ((hitCoordinates.y == coordinatesElement.y) && (hitCoordinates.x == coordinatesElement.x)) {
+                    view.highlightShipCellHit(gameBoardPlayerNumber, coordinatesElement);
+                }
+            });
+        };
+    };
+
+    function highLightShipCell(gameBoardPlayerNumber, coordinatesElement) {
+        view.highlightShipCell(gameBoardPlayerNumber, coordinatesElement);
+    };
+
+    function processCellClick(gameBoardPlayerNumber, hitCoordinates) {
+        if(gameBoardPlayerNumber == 1) {
+            gameBoardPlayer1.receiveHit(hitCoordinates);
+        }
+        display(gameBoardPlayer1);
+    };
+
+    return { display, initiateGame, processCellClick };
 };
 
 const controller = controllerConstructor();

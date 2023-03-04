@@ -26,7 +26,7 @@ const gameBoard = (playerNumber) => {
         shipsArray.forEach(shipsArrayElement => {
             shipsArrayElement.coordinates.forEach(shipCoordinates => {
                 if (JSON.stringify(hitCoordinates) == JSON.stringify(shipCoordinates)) {
-                    shipsArrayElement.newShip.hit();
+                    shipsArrayElement.newShip.hit(hitCoordinates);
                     shipWasHit = true;
                 }
             });

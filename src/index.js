@@ -61,7 +61,6 @@ const viewConstructor = () => {
     };
 
     function processCellClick(event) {
-        console.log("click!");
         const cellID = event.srcElement.id;
         const gameBoardPlayerNumber = Number(cellID.split("board")[1].split("cell")[0]);
         const coordinates = translateCellIDToCoordinates(cellID);
@@ -131,8 +130,17 @@ const controllerConstructor = () => {
     function processCellClick(gameBoardPlayerNumber, hitCoordinates) {
         if(gameBoardPlayerNumber == 1) {
             gameBoardPlayer1.receiveHit(hitCoordinates);
-        }
-        display(gameBoardPlayer1);
+            display(gameBoardPlayer1);
+            if (gameBoardPlayer1.isGameOver()) 
+                gameOver(gameBoardPlayerNumber);
+        };
+    };
+
+    function gameOver(gameBoardPlayerNumber) {
+        if (gameBoardPlayerNumber === 1)
+            alert("Player 2 Won!");
+        else 
+            alert("Player 1 Won!");
     };
 
     return { display, initiateGame, processCellClick };

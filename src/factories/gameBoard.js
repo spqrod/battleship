@@ -28,12 +28,12 @@ const gameBoard = (playerNumber) => {
                 if (JSON.stringify(hitCoordinates) == JSON.stringify(shipCoordinates)) {
                     shipsArrayElement.newShip.hit(hitCoordinates);
                     shipWasHit = true;
-                }
+                };
             });
         });
         if (!shipWasHit) {
             missedHitsCoordinates.push(hitCoordinates);
-        }
+        };
     };
     function isGameOver() {
         let thereIsLiveShip = false;

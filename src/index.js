@@ -14,16 +14,26 @@ const viewConstructor = () => {
         cell.classList.add("shipNormal");
     };
 
-    function highlightShipCellSunk(gameBoardPlayerNumber, coordinatesElement) {
-        const cellID = translateCoordinatesToCellID(gameBoardPlayerNumber, coordinatesElement);
-        const cell = document.querySelector(`#${cellID}`);
-        cell.classList.add("shipSunk");
-    };
-
     function highlightShipCellHit(gameBoardPlayerNumber, coordinatesElement) {
         const cellID = translateCoordinatesToCellID(gameBoardPlayerNumber, coordinatesElement);
         const cell = document.querySelector(`#${cellID}`);
         cell.classList.add("shipHit");
+        removeEventListener(cell);
+    };
+
+    function highlightShipCellSunk(gameBoardPlayerNumber, coordinatesElement) {
+        const cellID = translateCoordinatesToCellID(gameBoardPlayerNumber, coordinatesElement);
+        const cell = document.querySelector(`#${cellID}`);
+        cell.classList.add("shipSunk");
+        cell.classList.remove("shipHit");
+        removeEventListener(cell);
+    };
+    
+    function highlightMissedHit(gameBoardPlayerNumber, missedHitCoordinates) {
+        const cellID = translateCoordinatesToCellID(gameBoardPlayerNumber, missedHitCoordinates);
+        const cell = document.querySelector(`#${cellID}`);
+        cell.classList.add("missedHit");
+        removeEventListener(cell);
     };
 
     function translateCoordinatesToCellID(gameBoardPlayerNumber, coordinatesElement) {
@@ -42,18 +52,23 @@ const viewConstructor = () => {
     function addEventListeners() {
         const cellsArray = document.querySelectorAll(".cell");
         cellsArray.forEach(cell => {
-            cell.addEventListener("click", processCellClick)
+            cell.addEventListener("click", processCellClick);
         });
+    };
+    
+    function removeEventListener(cell) {
+        cell.removeEventListener("click", processCellClick);
     };
 
     function processCellClick(event) {
+        console.log("click!");
         const cellID = event.srcElement.id;
         const gameBoardPlayerNumber = Number(cellID.split("board")[1].split("cell")[0]);
         const coordinates = translateCellIDToCoordinates(cellID);
         controller.processCellClick(gameBoardPlayerNumber, coordinates);
     };
 
-    return { highlightShipCell, highlightShipCellSunk, highlightShipCellHit, addEventListeners };
+    return { highlightShipCell, highlightShipCellSunk, highlightShipCellHit, highlightMissedHit, addEventListeners };
 };
 
 const view = viewConstructor();
@@ -78,6 +93,9 @@ const controllerConstructor = () => {
 
     function display(gameBoard) {
         loopOverShips(gameBoard.gameBoardPlayerNumber, gameBoard.shipsArray);
+        gameBoardPlayer1.missedHitsCoordinates.forEach(missedHitCoordinatesElement => {
+            view.highlightMissedHit(gameBoard.gameBoardPlayerNumber, missedHitCoordinatesElement);
+        })
     };
     
     function loopOverShips(gameBoardPlayerNumber, shipsArray) {

@@ -50,3 +50,7 @@ h2 {
 .cell.shipSunk {
     background-color: rgb(0, 0, 0);
 }
+
+.cell.missedHit {
+    background-color: green;
+}

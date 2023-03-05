@@ -6,6 +6,7 @@ const gameBoard = (playerNumber) => {
     const gameBoardSize = 10;
     const shipsArray = [];
     const missedHitsCoordinates = [];
+    let areAllShipsPlaced = false;
     function createShip(length, coordinates) {
         // if (!areCoordinatesLegit(coordinates)) 
             // return;
@@ -44,5 +45,5 @@ const gameBoard = (playerNumber) => {
         });
         return (thereIsLiveShip) ? false : true;
     };
-    return {createShip, shipsArray, receiveHit, missedHitsCoordinates, isGameOver, gameBoardPlayerNumber};
+    return {createShip, shipsArray, receiveHit, missedHitsCoordinates, isGameOver, gameBoardPlayerNumber, areAllShipsPlaced};
 };

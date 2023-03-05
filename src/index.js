@@ -55,9 +55,30 @@ const viewConstructor = () => {
             cell.addEventListener("click", processCellClick);
         });
     };
-    
+
+    function addEventListenersForPlacingShips() {
+        const cellsArray = document.querySelectorAll(".cell");
+        cellsArray.forEach(cell => {
+            cell.addEventListener("click", processCellClickForPlacingShips);
+        });
+    };
+
+    function removeEventListenersForPlacingShips(cell) {
+        const cellsArray = document.querySelectorAll(".cell");
+        cellsArray.forEach(cell => {
+            cell.removeEventListener("click", processCellClickForPlacingShips);
+        });
+    };
+
     function removeEventListener(cell) {
         cell.removeEventListener("click", processCellClick);
+    };
+
+    function processCellClickForPlacingShips(event) {
+        const cellID = event.srcElement.id;
+        const gameBoardPlayerNumber = Number(cellID.split("board")[1].split("cell")[0]);
+        const coordinates = translateCellIDToCoordinates(cellID);
+        controller.processCellClickForPlacingShips(coordinates);
     };
 
     function processCellClick(event) {
@@ -67,7 +88,7 @@ const viewConstructor = () => {
         controller.processCellClick(gameBoardPlayerNumber, coordinates);
     };
 
-    return { highlightShipCell, highlightShipCellSunk, highlightShipCellHit, highlightMissedHit, addEventListeners };
+    return { highlightShipCell, highlightShipCellSunk, highlightShipCellHit, highlightMissedHit, addEventListeners, addEventListenersForPlacingShips, removeEventListenersForPlacingShips };
 };
 
 const view = viewConstructor();
@@ -75,18 +96,65 @@ const view = viewConstructor();
 // Controller
 const controllerConstructor = () => {
 
-    const gameBoardPlayer1 = gameBoard(1);
+    let gameBoardPlayer1;
+    let gameBoardPlayer2;
+    let shipsLengths;
+    let whosTurnForGameboard;
 
     function initiateGame() {
-        const newShip = ship(3);
-        // const gameBoard2 = gameBoard();
-        // const player1 = player();
-        // const player2 = player();
-        gameBoardPlayer1.createShip(2, [{ y: 1, x: 2 }, { y: 1, x: 3 }]);
-        gameBoardPlayer1.createShip(3, [{ y: 3, x: 1 }, { y: 3, x: 2 }, { y: 3, x: 3 }]);
-        // gameBoardPlayer2.createShip(3, [{ y: 6, x: 2 }, { y: 6, x: 4 }]);
-        // gameBoardPlayer2.createShip(3, [{ y: 6, x: 2 }, { y: 6, x: 4 }]);
-        display(gameBoardPlayer1);
+        assignInitialVariables();
+        placePlayerShips();
+    };
+
+    function assignInitialVariables() {
+        gameBoardPlayer1 = gameBoard(1);
+        gameBoardPlayer2 = gameBoard(2);
+        shipsLengths = [2, 3, 3, 4, 5];
+        whosTurnForGameboard = gameBoardPlayer1;
+    };
+
+    function placePlayerShips() {
+        console.log("Place your ships!");
+        view.addEventListenersForPlacingShips();
+    };
+
+    function processCellClickForPlacingShips(coordinates) {
+        const length = shipsLengths[shipsLengths.length - 1];
+        shipsLengths.pop();
+        const coordinatesArray = [coordinates];
+        for (let i = 0; i < length - 1; i++) {
+            coordinatesArray.push({ 
+                y: coordinates.y, 
+                x: coordinates.x++ 
+            });
+        };
+        whosTurnForGameboard.createShip(length, coordinatesArray);
+        if (whosTurnForGameboard == gameBoardPlayer1) 
+            display(whosTurnForGameboard);
+        if (!shipsLengths.length) {
+            whosTurnForGameboard.areAllShipsPlaced = true;
+            if (!gameBoardPlayer2.areAllShipsPlaced) {
+                view.removeEventListenersForPlacingShips();
+                placePCships();
+            } else {
+                startGame();
+            }
+        };
+    };
+    
+    function placePCships() {
+        console.log("PC is placing its ships..");
+        whosTurnForGameboard = gameBoardPlayer2;
+        shipsLengths = [2, 3, 3, 4, 5];
+        processCellClickForPlacingShips({ y: 6, x: 2 });
+        processCellClickForPlacingShips({ y: 4, x: 2 });
+        processCellClickForPlacingShips({ y: 2, x: 2 });
+        processCellClickForPlacingShips({ y: 0, x: 2 });
+        processCellClickForPlacingShips({ y: 8, x: 2 });
+    };
+    
+    function startGame() {
+        console.log("start game");
         view.addEventListeners();
     };
 
@@ -127,6 +195,9 @@ const controllerConstructor = () => {
         view.highlightShipCell(gameBoardPlayerNumber, coordinatesElement);
     };
 
+
+
+
     function processCellClick(gameBoardPlayerNumber, hitCoordinates) {
         if(gameBoardPlayerNumber == 1) {
             gameBoardPlayer1.receiveHit(hitCoordinates);
@@ -143,7 +214,7 @@ const controllerConstructor = () => {
             alert("Player 1 Won!");
     };
 
-    return { display, initiateGame, processCellClick };
+    return { display, initiateGame, processCellClick, processCellClickForPlacingShips };
 };
 
 const controller = controllerConstructor();

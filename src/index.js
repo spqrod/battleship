@@ -159,18 +159,18 @@ const controllerConstructor = () => {
     };
 
     function display(gameBoard) {
-        loopOverShips(gameBoard.gameBoardPlayerNumber, gameBoard.shipsArray);
-        gameBoardPlayer1.missedHitsCoordinates.forEach(missedHitCoordinatesElement => {
-            view.highlightMissedHit(gameBoard.gameBoardPlayerNumber, missedHitCoordinatesElement);
-        })
+        loopOverShipsToHighlight(gameBoard.gameBoardPlayerNumber, gameBoard.shipsArray);
+        loopOverMissedHitsToHighlight(gameBoard);
     };
     
-    function loopOverShips(gameBoardPlayerNumber, shipsArray) {
+    function loopOverShipsToHighlight(gameBoardPlayerNumber, shipsArray) {
         shipsArray.forEach(shipsArrayElement => {
             shipsArrayElement.coordinates.forEach(coordinatesElement => {
                 highLightShipCellSunk(shipsArrayElement.newShip, gameBoardPlayerNumber, coordinatesElement);
                 highLightShipCellHit(shipsArrayElement.newShip, gameBoardPlayerNumber, coordinatesElement);
-                highLightShipCell(gameBoardPlayerNumber, coordinatesElement);
+                if (gameBoardPlayerNumber == 1) {
+                    highLightShipCell(gameBoardPlayerNumber, coordinatesElement);
+                };
             });
         });
     };
@@ -195,20 +195,32 @@ const controllerConstructor = () => {
         view.highlightShipCell(gameBoardPlayerNumber, coordinatesElement);
     };
 
-
-
+    function loopOverMissedHitsToHighlight(gameBoard) {
+        gameBoard.missedHitsCoordinates.forEach(missedHitCoordinatesElement => {
+            view.highlightMissedHit(gameBoard.gameBoardPlayerNumber, missedHitCoordinatesElement);
+        });
+    };
 
     function processCellClick(gameBoardPlayerNumber, hitCoordinates) {
         if(gameBoardPlayerNumber == 1) {
             gameBoardPlayer1.receiveHit(hitCoordinates);
             display(gameBoardPlayer1);
-            if (gameBoardPlayer1.isGameOver()) 
-                gameOver(gameBoardPlayerNumber);
+        } else {
+            gameBoardPlayer2.receiveHit(hitCoordinates);
+            display(gameBoardPlayer2);
         };
+        isGameOver();
     };
 
-    function gameOver(gameBoardPlayerNumber) {
-        if (gameBoardPlayerNumber === 1)
+    function isGameOver() {
+        if (gameBoardPlayer1.isGameOver()) 
+            gameOver(gameBoardPlayer1);
+        else if (gameBoardPlayer2.isGameOver())
+            gameOver(gameBoardPlayer2);
+    };
+
+    function gameOver(gameBoard) {
+        if (gameBoard.gameBoardPlayerNumber === 1)
             alert("Player 2 Won!");
         else 
             alert("Player 1 Won!");

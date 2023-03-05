@@ -50,7 +50,7 @@ const viewConstructor = () => {
     };
 
     function addEventListeners() {
-        const cellsArray = document.querySelectorAll(".cell");
+        const cellsArray = document.querySelectorAll(".cell.player2");
         cellsArray.forEach(cell => {
             cell.addEventListener("click", processCellClick);
         });
@@ -74,6 +74,12 @@ const viewConstructor = () => {
         cell.removeEventListener("click", processCellClick);
     };
 
+    function removeAllEventListeners() {
+        document.querySelectorAll(".cell").forEach(cell => {
+            cell.removeEventListener("click", processCellClick);
+        });
+    };
+
     function processCellClickForPlacingShips(event) {
         const cellID = event.srcElement.id;
         const gameBoardPlayerNumber = Number(cellID.split("board")[1].split("cell")[0]);
@@ -88,7 +94,7 @@ const viewConstructor = () => {
         controller.processCellClick(gameBoardPlayerNumber, coordinates);
     };
 
-    return { highlightShipCell, highlightShipCellSunk, highlightShipCellHit, highlightMissedHit, addEventListeners, addEventListenersForPlacingShips, removeEventListenersForPlacingShips };
+    return { highlightShipCell, highlightShipCellSunk, highlightShipCellHit, highlightMissedHit, addEventListeners, addEventListenersForPlacingShips, removeEventListenersForPlacingShips, removeAllEventListeners };
 };
 
 const view = viewConstructor();
@@ -100,6 +106,7 @@ const controllerConstructor = () => {
     let gameBoardPlayer2;
     let shipsLengths;
     let whosTurnForGameboard;
+    let whichPlayersMove = 1;
 
     function initiateGame() {
         assignInitialVariables();
@@ -146,14 +153,24 @@ const controllerConstructor = () => {
         console.log("PC is placing its ships..");
         whosTurnForGameboard = gameBoardPlayer2;
         shipsLengths = [2, 3, 3, 4, 5];
-        processCellClickForPlacingShips({ y: 6, x: 2 });
-        processCellClickForPlacingShips({ y: 4, x: 2 });
-        processCellClickForPlacingShips({ y: 2, x: 2 });
-        processCellClickForPlacingShips({ y: 0, x: 2 });
-        processCellClickForPlacingShips({ y: 8, x: 2 });
+
+        for (let i = 0; i < 5; i++) {
+            let coordinates = {};
+            do {
+                let y = getRandomNumber(10);
+                let x = getRandomNumber(9 - shipsLengths[shipsLengths.length - 1] + 2);
+                coordinates = { y, x };
+            } while (!gameBoardPlayer2.checkIfCoordinatesAvailable(2, coordinates));
+            processCellClickForPlacingShips(coordinates);
+        };
     };
-    
+
+    function getRandomNumber(max) {
+        return Math.floor(Math.random() * max);
+    };
+
     function startGame() {
+        display(gameBoardPlayer1);
         console.log("start game");
         view.addEventListeners();
     };
@@ -207,6 +224,7 @@ const controllerConstructor = () => {
             display(gameBoardPlayer1);
         } else {
             gameBoardPlayer2.receiveHit(hitCoordinates);
+            makePChit();
             display(gameBoardPlayer2);
         };
         isGameOver();
@@ -224,6 +242,14 @@ const controllerConstructor = () => {
             alert("Player 2 Won!");
         else 
             alert("Player 1 Won!");
+        view.removeAllEventListeners();
+    };
+
+    function makePChit() {
+        let y = getRandomNumber(10);
+        let x = getRandomNumber(10);
+        const hitCoordinates = { y, x };
+        processCellClick(1, hitCoordinates)
     };
 
     return { display, initiateGame, processCellClick, processCellClickForPlacingShips };
